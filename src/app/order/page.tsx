@@ -1,22 +1,31 @@
+import BottomSheet from "@/components/bottom-sheet";
+import Item from "@/components/item";
 import { LogoSmall } from "@/icons/logo";
+import Link from "next/link";
 import React from "react";
 
-export default function Page() {
+export type Item = {
+  name: string;
+  event: boolean;
+  price: number;
+  id: number;
+};
+
+export default async function Page() {
+  const getItems = await fetch("http://localhost:3001/items");
+  const items: Item[] = await getItems.json();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-white">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-[18px] bg-white px-6 py-[75px] pb-[164px]">
       <nav className="fixed top-0 h-[57px] bg-black w-full flex items-center px-3">
-        <LogoSmall />
+        <Link href="/">
+          <LogoSmall />
+        </Link>
       </nav>
-      order
-      <div className="fixed bottom-0 w-full rounded-t-[20px] border shadow-md px-[22px] py-[24px] flex-col gap-[18px]">
-        <div className="text-end">
-          <p>총 수량 : </p>
-          <p>총 가격 : </p>
-        </div>
-        <button className="w-full h-12 text-white bg-[#C1C1C1] flex justify-center items-center text-[18px] font-normal">
-          주문하기
-        </button>
-      </div>
+      {items?.map((item) => (
+        <Item key={item.id} item={item} />
+      ))}
+      <BottomSheet />
     </main>
   );
 }
