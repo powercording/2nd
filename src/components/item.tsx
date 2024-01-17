@@ -1,6 +1,7 @@
 "use client";
 
-import React, { ComponentPropsWithoutRef, useState } from "react";
+import React, { ComponentPropsWithoutRef } from "react";
+import { twMerge } from "tailwind-merge";
 import { Itemtype } from "@/app/order/page";
 import { SetterOrUpdater } from "recoil";
 import { Items } from "@/app/atom/atom";
@@ -23,7 +24,10 @@ export default function Item({
 
   return (
     <div
-      className="w-full h-20 flex items-center px-3 py-[9px] border border-opacity-30 rounded-[15px] gap-2 whitespace-nowrap min-w-[250px]"
+      className={twMerge(
+        "w-full h-20 flex items-center px-3 py-[9px] border border-opacity-30 rounded-[15px] gap-2 whitespace-nowrap min-w-[250px]",
+        isSelected ? "bg-[#F75A2F1A]" : "bg-white"
+      )}
       {...rest}
     >
       {/* 원래 Image 컴포넌트를 사용해야 하지만 비어있으므로 */}
@@ -66,6 +70,15 @@ export default function Item({
                 return alert("0 이하로는 설정할 수 없습니다.");
               }
 
+              if (quantity === 1) {
+                setOrder((order) => {
+                  const newOrder = { ...order };
+                  delete newOrder[id];
+                  return newOrder;
+                });
+                return;
+              }
+
               setOrder((order) => {
                 const newOrder = { ...order };
                 newOrder[id] = {
@@ -77,7 +90,7 @@ export default function Item({
               });
             }}
           />
-          <p>{price.toLocaleString()}원</p>
+          <p>{price * quantity === 0 ? price : price * quantity}원</p>
         </div>
       </div>
     </div>
