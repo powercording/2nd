@@ -56,6 +56,7 @@ export default function Item({
                 newOrder[id] = {
                   id,
                   quantity: quantity + 1,
+                  price,
                 };
                 return newOrder;
               });
@@ -70,6 +71,7 @@ export default function Item({
                 newOrder[id] = {
                   id,
                   quantity: quantity - 1,
+                  price,
                 };
                 return newOrder;
               });
