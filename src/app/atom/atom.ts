@@ -1,9 +1,10 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 
-const orderState = atom({
+export type Items = {
+  [key: string]: { id: string; quantity: number };
+};
+
+export const orderState = atom<Items>({
   key: "orderState",
-  default: {
-    items: [],
-    total: 0,
-  },
+  default: {},
 });

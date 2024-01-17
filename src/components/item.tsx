@@ -1,12 +1,26 @@
 "use client";
 
 import React, { ComponentPropsWithoutRef, useState } from "react";
-import { Item } from "@/app/order/page";
+import { Itemtype } from "@/app/order/page";
+import { SetterOrUpdater } from "recoil";
+import { Items } from "@/app/atom/atom";
 
-type ItemProps = { item: Item } & ComponentPropsWithoutRef<"div">;
+type ItemProps = {
+  item: Itemtype;
+  isSelected: boolean;
+  quantity: number;
+  setOrder: SetterOrUpdater<Items>;
+} & ComponentPropsWithoutRef<"div">;
 
-export default function Item({ item, ...rest }: ItemProps) {
+export default function Item({
+  item,
+  isSelected,
+  quantity,
+  setOrder,
+  ...rest
+}: ItemProps) {
   const { name, event, price, id } = item;
+
   return (
     <div
       className="w-full h-20 flex items-center px-3 py-[9px] border border-opacity-30 rounded-[15px] gap-2 whitespace-nowrap min-w-[250px]"
@@ -30,7 +44,37 @@ export default function Item({ item, ...rest }: ItemProps) {
           ) : null}
         </div>
         <div className="flex items-center justify-between w-full">
-          <Counter />
+          <Counter
+            count={quantity}
+            increment={() => {
+              if (quantity === 999) {
+                return alert("999 이상으로는 설정할 수 없습니다.");
+              }
+
+              setOrder((order) => {
+                const newOrder = { ...order };
+                newOrder[id] = {
+                  id,
+                  quantity: quantity + 1,
+                };
+                return newOrder;
+              });
+            }}
+            decrement={() => {
+              if (quantity === 0) {
+                return alert("0 이하로는 설정할 수 없습니다.");
+              }
+
+              setOrder((order) => {
+                const newOrder = { ...order };
+                newOrder[id] = {
+                  id,
+                  quantity: quantity - 1,
+                };
+                return newOrder;
+              });
+            }}
+          />
           <p>{price.toLocaleString()}원</p>
         </div>
       </div>
@@ -40,25 +84,16 @@ export default function Item({ item, ...rest }: ItemProps) {
 
 // this Counter component seems not to be used other than this file.
 // so I didn't create a new file for this.
-export function Counter() {
-  const [count, setCount] = useState(0);
+type Counter = {
+  increment: () => void;
+  decrement: () => void;
+  count: number;
+};
 
-  const increment = () => setCount((count) => count + 1);
-
+export function Counter({ increment, decrement, count }: Counter) {
   return (
     <div className="flex items-center gap-2 text-[18px]">
-      <button
-        onClick={() =>
-          setCount((count) => {
-            if (count === 0) {
-              return count;
-            }
-            return count - 1;
-          })
-        }
-      >
-        -
-      </button>
+      <button onClick={decrement}>-</button>
 
       <span className="flex w-7 justify-center">{count}</span>
 
