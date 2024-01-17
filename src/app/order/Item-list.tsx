@@ -3,18 +3,20 @@
 import React from "react";
 import { Itemtype } from "./page";
 import Item from "@/components/item";
-import { useRecoilState } from "recoil";
-import { orderState } from "../atom/atom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { orderState, orderSummary } from "../atom/atom";
 
 export default function ItemList({ items }: { items: Itemtype[] }) {
   const [orderData, setOrderData] = useRecoilState(orderState);
+  const { totalQuantity } = useRecoilValue(orderSummary);
 
   return items?.map((item) => (
     <Item
       key={item.id}
       item={item}
       isSelected={orderData.hasOwnProperty(item.id)}
-      quantity={orderData[item.id]?.quantity || 0}
+      quantity={orderData[item.id]?.quantity ?? 0}
+      totalQuantity={totalQuantity}
       setOrder={setOrderData}
     />
   ));

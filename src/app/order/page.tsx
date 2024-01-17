@@ -2,7 +2,7 @@ import BottomSheet from "@/components/bottom-sheet";
 import { LogoSmall } from "@/icons/logo";
 import Link from "next/link";
 import React from "react";
-import ItemList from "./ItemList";
+import ItemList from "./Item-list";
 
 export type Itemtype = {
   name: string;

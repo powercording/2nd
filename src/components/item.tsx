@@ -5,11 +5,13 @@ import { twMerge } from "tailwind-merge";
 import { Itemtype } from "@/app/order/page";
 import { SetterOrUpdater } from "recoil";
 import { Items } from "@/app/atom/atom";
+import INFO_TEXT from "@/constant/info-text";
 
 type ItemProps = {
   item: Itemtype;
   isSelected: boolean;
   quantity: number;
+  totalQuantity: number;
   setOrder: SetterOrUpdater<Items>;
 } & ComponentPropsWithoutRef<"div">;
 
@@ -18,6 +20,7 @@ export default function Item({
   isSelected,
   quantity,
   setOrder,
+  totalQuantity,
   ...rest
 }: ItemProps) {
   const { name, event, price, id } = item;
@@ -49,10 +52,11 @@ export default function Item({
         </div>
         <div className="flex items-center justify-between w-full">
           <Counter
+            key={id}
             count={quantity}
             increment={() => {
-              if (quantity === 999) {
-                return alert("999 이상으로는 설정할 수 없습니다.");
+              if (totalQuantity === 999) {
+                return alert(INFO_TEXT.MAX_LIMIT);
               }
 
               setOrder((order) => {
@@ -67,7 +71,7 @@ export default function Item({
             }}
             decrement={() => {
               if (quantity === 0) {
-                return alert("0 이하로는 설정할 수 없습니다.");
+                return alert(INFO_TEXT.MIN_LIMIT);
               }
 
               if (quantity === 1) {
@@ -89,6 +93,34 @@ export default function Item({
                 return newOrder;
               });
             }}
+            onInputChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const value = e.target.value;
+
+              // value less than 0 or empty string
+              if (value === "" || Number(value) <= 0) {
+                return setOrder((order) => {
+                  const newOrder = { ...order };
+                  delete newOrder[id];
+                  return newOrder;
+                });
+              }
+
+              // total quantity over 999
+              if (totalQuantity + Number(value) - quantity > 999) {
+                return alert(INFO_TEXT.MAX_LIMIT);
+              }
+
+              // set value
+              setOrder((order) => {
+                const newOrder = { ...order };
+                newOrder[id] = {
+                  id,
+                  quantity: Number(value),
+                  price,
+                };
+                return newOrder;
+              });
+            }}
           />
           <p>{price * quantity === 0 ? price : price * quantity}원</p>
         </div>
@@ -102,15 +134,26 @@ export default function Item({
 type Counter = {
   increment: () => void;
   decrement: () => void;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   count: number;
 };
 
-export function Counter({ increment, decrement, count }: Counter) {
+export function Counter({
+  increment,
+  decrement,
+  onInputChange,
+  count,
+}: Counter) {
   return (
     <div className="flex items-center gap-2 text-[18px]">
       <button onClick={decrement}>-</button>
 
-      <span className="flex w-7 justify-center">{count}</span>
+      <input
+        className="w-10 text-center bg-transparent"
+        type="number"
+        value={(count + "").startsWith("0") ? count : count}
+        onChange={onInputChange}
+      />
 
       <button onClick={increment}>+</button>
     </div>
