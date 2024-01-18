@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 export default function ErrorPage() {
   const router = useRouter();
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       router.replace("/");
     }, 3000);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [router]);
 
   return (

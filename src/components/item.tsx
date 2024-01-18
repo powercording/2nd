@@ -27,11 +27,12 @@ export default function Item({
 
   return (
     <div
+      {...rest}
       className={twMerge(
         "w-full h-20 flex items-center px-3 py-[9px] border border-opacity-30 rounded-[15px] gap-2 whitespace-nowrap min-w-[250px]",
-        isSelected ? "bg-[#F75A2F1A]" : "bg-white"
+        isSelected ? "bg-[#F75A2F1A]" : "bg-white",
+        rest.className
       )}
-      {...rest}
     >
       {/* 원래 Image 컴포넌트를 사용해야 하지만 비어있으므로 */}
       <div
